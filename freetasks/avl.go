@@ -24,7 +24,11 @@ func (t *AVL) Insert(value int) {
 	t.root = t.insert(t.root, value)
 }
 
-func (t *AVL) Print() string {
+func (t *AVL) Remove(value int) {
+	t.root = t.remove(t.root, value)
+}
+
+func (t *AVL) String() string {
 	var nodes []*Node
 	visited := make(map[*Node]bool)
 	visited[t.root] = true
@@ -45,22 +49,22 @@ func (t *AVL) Print() string {
 			continue
 		}
 
-		for _, l := range []*Node{n.left, n.right} {
-			if _, ok := visited[l]; l != nil && ok {
+		for _, child := range []*Node{n.left, n.right} {
+			if _, ok := visited[child]; child != nil && ok {
 				continue
 			}
 
-			nodes = append(nodes, l)
-			visited[l] = true
+			nodes = append(nodes, child)
+			visited[child] = true
 		}
 	}
 
-	return b.String()
+	return strings.TrimSpace(b.String())
 }
 
 func (t *AVL) ASCII() string {
 	if t.root == nil {
-		return "<empty>\n"
+		return "nil"
 	}
 
 	var b strings.Builder
@@ -116,6 +120,12 @@ func (t *AVL) insert(n *Node, value int) *Node {
 		return n
 	}
 
+	n = t.balance(n)
+
+	return n
+}
+
+func (t *AVL) balance(n *Node) *Node {
 	n.fixHeight()
 
 	switch n.diff() {
@@ -134,37 +144,83 @@ func (t *AVL) insert(n *Node, value int) *Node {
 	return n
 }
 
+func (t *AVL) remove(n *Node, value int) *Node {
+	if n == nil {
+		return n
+	}
+
+	if value < n.value {
+		n.left = t.remove(n.left, value)
+	} else if value > n.value {
+		n.right = t.remove(n.right, value)
+	} else {
+		left := n.left
+		right := n.right
+
+		n.left = nil
+		n.right = nil
+		n = nil
+
+		if right == nil {
+			return left
+		}
+
+		minRight := t.findMin(right)
+		minRight.right = t.removeMin(right)
+		minRight.left = left
+		return t.balance(minRight)
+	}
+
+	return t.balance(n)
+}
+
+func (t *AVL) findMin(n *Node) *Node {
+	if n.left != nil {
+		return t.findMin(n.left)
+	}
+
+	return n
+}
+
+func (t *AVL) removeMin(n *Node) *Node {
+	if n.left == nil {
+		return n.right
+	}
+	n.left = t.removeMin(n.left)
+	return t.balance(n)
+}
+
 func (t *AVL) rotateLeft(n *Node) *Node {
-	p := n.right
-	n.right = p.left
-	p.left = n
+	next := n.right
+	n.right = next.left
+	next.left = n
 
 	n.fixHeight()
-	p.fixHeight()
+	next.fixHeight()
 
-	return p
+	return next
 }
 
 func (t *AVL) rotateRight(n *Node) *Node {
-	q := n.left
-	n.left = q.right
-	q.right = n
+	next := n.left
+	n.left = next.right
+	next.right = n
 
 	n.fixHeight()
-	q.fixHeight()
+	next.fixHeight()
 
-	return q
+	return next
 }
 
 func (n *Node) fixHeight() {
-	if n.left.Height() > n.right.Height() {
-		n.height = n.left.Height() + 1
+	if n.left.getHeight() > n.right.getHeight() {
+		n.height = n.left.getHeight() + 1
 	} else {
-		n.height = n.right.Height() + 1
+		n.height = n.right.getHeight() + 1
 	}
 }
 
-func (n *Node) Height() int {
+func (n *Node) getHeight() int {
 	if n == nil {
 		return 0
 	}
@@ -172,5 +228,5 @@ func (n *Node) Height() int {
 }
 
 func (n *Node) diff() int {
-	return n.right.Height() - n.left.Height()
+	return n.right.getHeight() - n.left.getHeight()
 }
