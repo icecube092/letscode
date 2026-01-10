@@ -8,31 +8,10 @@ import (
 func TestAVL(t *testing.T) {
 	tree := NewAVL()
 
-	tree.Insert(1)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
+	for i := range 8 {
+		tree.Insert(i)
+	}
 
-	tree.Insert(2)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
-
-	tree.Insert(3)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
-
-	tree.Insert(4)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
-
-	tree.Insert(5)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
-
-	tree.Insert(6)
-	fmt.Println(tree.String())
-	fmt.Println(tree.ASCII())
-
-	tree.Insert(7)
 	fmt.Println(tree.String())
 	fmt.Println(tree.ASCII())
 
@@ -49,6 +28,28 @@ func TestAVL(t *testing.T) {
 	fmt.Println(tree.ASCII())
 
 	tree.Remove(0)
+	fmt.Println(tree.String())
+	fmt.Println(tree.ASCII())
+
+	tree.Insert(0)
+	fmt.Println(tree.String())
+	fmt.Println(tree.ASCII())
+
+	for i := range 10 {
+		tree.Insert(i)
+	}
+
+	fmt.Println(tree.String())
+	fmt.Println(tree.ASCII())
+
+	tree.Remove(3)
+	fmt.Println(tree.String())
+	fmt.Println(tree.ASCII())
+
+	for i := range 3 {
+		tree.Remove(i)
+	}
+
 	fmt.Println(tree.String())
 	fmt.Println(tree.ASCII())
 }

@@ -126,7 +126,7 @@ func (t *AVL) insert(n *Node, value int) *Node {
 }
 
 func (t *AVL) balance(n *Node) *Node {
-	n.fixHeight()
+	n.updateHeight()
 
 	switch n.diff() {
 	case 2:
@@ -187,32 +187,47 @@ func (t *AVL) removeMin(n *Node) *Node {
 		return n.right
 	}
 	n.left = t.removeMin(n.left)
+
 	return t.balance(n)
 }
 
 func (t *AVL) rotateLeft(n *Node) *Node {
 	next := n.right
-	n.right = next.left
-	next.left = n
 
-	n.fixHeight()
-	next.fixHeight()
+	if next != nil {
+		n.right = next.left
+		next.left = n
+	} else {
+		next = n
+	}
+
+	n.updateHeight()
+	next.updateHeight()
 
 	return next
 }
 
 func (t *AVL) rotateRight(n *Node) *Node {
 	next := n.left
-	n.left = next.right
-	next.right = n
 
-	n.fixHeight()
-	next.fixHeight()
+	if next != nil {
+		n.left = next.right
+		next.right = n
+	} else {
+		next = n
+	}
+
+	n.updateHeight()
+	next.updateHeight()
 
 	return next
 }
 
-func (n *Node) fixHeight() {
+func (n *Node) updateHeight() {
+	if n == nil {
+		return
+	}
+
 	if n.left.getHeight() > n.right.getHeight() {
 		n.height = n.left.getHeight() + 1
 	} else {
